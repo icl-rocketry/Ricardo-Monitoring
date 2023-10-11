@@ -1,0 +1,72 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+- job_name: node
+  static_configs:
+  - targets:
+    - net.mcc.iclr:9100
+    - net.pad.iclr:9100
+    - gss.mcc.iclr:9100
+    - gss.pad.iclr:9100
+  relabel_configs:
+    - source_labels: [__address__]
+      target_label: instance
+      regex: '([^:]+)(:[0-9]+)?'
+      replacement: '${1}'
+
+- job_name: 'blackbox-icmp'
+  metrics_path: /probe
+  params:
+    module: [icmp]
+  static_configs:
+    - targets:
+      - net.mcc.iclr
+      - gss.mcc.iclr
+      - router.mcc.iclr
+      - ptp.mcc.iclr
+      - net.pad.iclr
+      - gss.pad.iclr
+      - router.pad.iclr
+      - ptp.pad.iclr
+  relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - target_label: __address__
+      replacement: blackbox:9115
+
+- job_name: 'blackbox-icmp-external'
+  metrics_path: /probe
+  params:
+    module: [icmp]
+  static_configs:
+    - targets:
+      - 1.1.1.1
+      - 1.0.0.1
+      - 8.8.8.8
+      - 8.8.4.4
+  relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - target_label: __address__
+      replacement: blackbox:9115
+
+- job_name: snmp_mikrotik
+  metrics_path: /snmp
+  params:
+    module: [mikrotik]
+  static_configs:
+    - targets:
+      - router.mcc.iclr
+      - router.pad.iclr
+  relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - target_label: __address__
+      replacement: snmp:9116
