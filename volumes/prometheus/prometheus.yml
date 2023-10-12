@@ -36,6 +36,7 @@ scrape_configs:
       target_label: instance
     - target_label: __address__
       replacement: blackbox:9115
+  scrape_interval: 1s
 
 - job_name: 'blackbox-icmp-external'
   metrics_path: /probe
