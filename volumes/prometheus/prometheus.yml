@@ -35,8 +35,8 @@ scrape_configs:
     - source_labels: [__param_target]
       target_label: instance
     - target_label: __address__
-      replacement: blackbox:9115
-  scrape_interval: 1s
+      replacement: blackbox-exporter:9115
+  scrape_interval: 5s
 
 - job_name: 'blackbox-icmp-external'
   metrics_path: /probe
@@ -48,18 +48,23 @@ scrape_configs:
       - 1.0.0.1
       - 8.8.8.8
       - 8.8.4.4
+      - 9.9.9.9
+      - 149.112.112.112
+      - 208.67.222.222
+      - 208.67.220.220
   relabel_configs:
     - source_labels: [__address__]
       target_label: __param_target
     - source_labels: [__param_target]
       target_label: instance
     - target_label: __address__
-      replacement: blackbox:9115
+      replacement: blackbox-exporter:9115
 
 - job_name: snmp_mikrotik
   metrics_path: /snmp
   params:
     module: [mikrotik]
+    auth: [public_v1]
   static_configs:
     - targets:
       - router.mcc.iclr
@@ -70,4 +75,21 @@ scrape_configs:
     - source_labels: [__param_target]
       target_label: instance
     - target_label: __address__
-      replacement: snmp:9116
+      replacement: snmp-exporter:9116
+
+- job_name: snmp_unifi
+  metrics_path: /snmp
+  params:
+    module: [ubiquiti_airmax]
+    auth: [public_v1]
+  static_configs:
+    - targets:
+      - ptp.mcc.iclr
+      - ptp.pad.iclr
+  relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - target_label: __address__
+      replacement: snmp-exporter:9116

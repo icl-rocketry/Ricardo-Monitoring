@@ -25,14 +25,14 @@ services:
 
   snmp-exporter:
     image: prom/snmp-exporter
-    container_name: snmp
+    container_name: snmp-exporter
     ports:
       - 9116:9116
     restart: unless-stopped
   
   blackbox-exporter:
     image: prom/blackbox-exporter
-    container_name: blackbox
+    container_name: blackbox-exporter
     ports:
       - 9115:9115
     restart: unless-stopped
